@@ -462,6 +462,10 @@ homeguide:onboarding
 
 오류가 발생하면 애플리케이션이 중단되지 않도록 처리하고 사용자에게 필요한 안내를 표시한다.
 
+온보딩 완료 저장 중에는 `homeguide:pending-onboarding`에 네 키의 이전 원본을 보관한다. 네 키 저장 및 복구 키 제거까지 성공해야 완료로 처리한다. 실패 또는 실행 중단 시 이전 원본을 복구하며, 복구가 불가능하면 정보를 보존하고 로딩 오류를 안내한다.
+
+관리 대상의 추가·수정·연관 기록 삭제도 동일한 복구 절차를 사용하며 공통 키 `homeguide:pending-data`에 이전 원본을 임시 보관한다. 두 복구 키는 앱 초기 로딩에서 모두 확인한다.
+
 ### 7.3 데이터 영속성 한계
 
 localStorage는 브라우저와 기기에 종속된다.
@@ -499,6 +503,10 @@ React Context와 useState를 사용한다.
 - deleteHistory
 - updateOnboarding
 - completeOnboarding
+
+현재 기능 개발 2단계에서는 `AppDataProvider`와 `useAppData`로 데이터 로딩 및 `saveResource(resource, value)`를 연결했다. 저장 성공 이후에만 공유 상태를 갱신하며, 로딩 오류 시 원본을 보존하고 재시도를 제공한다. 온보딩은 3단계에서 `completeOnboarding(wizard)`로 일괄 저장했다. 4단계에서 `addItem`, `updateItem`, `deleteItem`을 연결했으며, 항목과 새 공간 및 연관 기록은 함께 저장한다. 6단계에서 `addHistory`, `updateHistory`, `deleteHistory`도 연결했다. 기록 배열 키의 쓰기 성공 이후에만 공유 상태를 갱신하며 일정은 원본으로부터 다시 계산한다.
+
+조회 화면은 Context 데이터를 사용한다. 디자인 예시는 명시적인 개발용 preview 경로에 한정한다. 5단계에서 maintenanceService와 달력 날짜 유틸리티를 연결했다. 홈·목록·상세는 원본 기록 및 사용자 주기로 마지막 관리일·다음 관리일·상태를 계산하고 우선순위로 정렬한다. 오늘 날짜가 바뀌어도 다시 계산하며 파생 값은 저장하지 않는다.
 
 ### 8.2 상태 변경 흐름
 
@@ -613,8 +621,8 @@ nextDueDate = lastManagedDate + intervalDays
 
 | 경로                     | 페이지          | 기능             |
 | ------------------------ | --------------- | ---------------- |
-| /onboarding              | OnboardingPage  | 초기 설정        |
-| /                        | HomePage        | 관리 대시보드    |
+| /                        | OnboardingPage  | 초기 설정 시작 및 4단계 진행 |
+| /home                    | HomePage        | 관리 대시보드    |
 | /items                   | ItemsPage       | 전체 관리 대상   |
 | /items/new               | ItemFormPage    | 관리 대상 추가   |
 | /items/:itemId           | ItemDetailPage  | 관리 대상 상세   |
@@ -624,11 +632,17 @@ nextDueDate = lastManagedDate + intervalDays
 | /history/:historyId/edit | HistoryEditPage | 관리 기록 수정   |
 | \*                       | NotFoundPage    | 잘못된 경로 안내 |
 
-### 11.1 접근 제어
+`/`에서 온보딩 시작 → 공간 선택 → 공간별 관리 항목 발견 → 관리 주기 설정을 진행하고, 설정 완료 버튼으로 `/home`에 진입한다. 온보딩 단계는 현재 화면 내부 상태로 전환한다.
 
-- 온보딩을 완료하지 않았다면 /onboarding으로 이동한다.
-- 온보딩을 완료했다면 /onboarding 접근 시 홈으로 이동한다.
+기존 `/onboarding` 주소는 검색 매개변수와 해시를 유지하며 `/`로 리다이렉트한다. 잘못된 상세·수정 ID는 해당 화면에서 찾을 수 없음 안내를 표시하고, 일치하는 경로가 없으면 404를 표시한다.
+
+### 11.1 접근 제어 (기능 구현 단계의 정책)
+
+- 온보딩을 완료하지 않았다면 `/`로 이동한다.
+- 온보딩을 완료했다면 `/` 접근 시 `/home`으로 이동한다.
 - 저장 데이터 로딩이 완료되기 전에는 리다이렉트 여부를 결정하지 않는다.
+
+기능 개발 3단계에서 완료 상태 저장과 자동 접근 제어를 연결했다. 개발용으로 명시한 디자인 미리보기는 예외로 접근할 수 있으며 사용자 데이터를 저장하지 않는다.
 
 ### 11.2 내비게이션
 
@@ -782,3 +796,7 @@ AI가 생성한 코드를 그대로 수용하지 않고 다음 사항을 기록�
 5. localStorage 오류 발생 시 사용자 복구 안내
 
 핵심 기능 구현에 영향을 주는 정책은 해당 기능 개발 전에 확정한다.
+
+## 현재 통합 검증 및 배포 준비
+
+7단계에서 Vitest/Testing Library 가상 DOM 통합 테스트와 `npm run check`, 빌드 파일 검사 및 GitHub Actions 검증 설정을 추가했다. Vercel SPA rewrite와 Node 22 설정을 제공한다. 실제 브라우저 확인 및 외부 배포 결과는 TEST_REPORT.md와 DEPLOYMENT.md를 참고한다. 외부 배포는 사용자가 직접 진행한다.
