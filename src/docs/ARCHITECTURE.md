@@ -799,4 +799,4 @@ AI가 생성한 코드를 그대로 수용하지 않고 다음 사항을 기록�
 
 ## 현재 통합 검증 및 배포 준비
 
-7단계에서 Vitest/Testing Library 가상 DOM 통합 테스트와 `npm run check`, 빌드 파일 검사 및 GitHub Actions 검증 설정을 추가했다. Vercel SPA rewrite와 Node 22 설정을 제공한다. 실제 브라우저 확인 및 외부 배포 결과는 TEST_REPORT.md와 DEPLOYMENT.md를 참고한다. 외부 배포는 사용자가 직접 진행한다.
+7단계에서 Vitest/Testing Library 가상 DOM 통합 테스트와 `npm run check`, 빌드 파일 검사를 추가했다. GitHub Actions 워크플로는 제거했으며 로컬에서 검증을 직접 실행한다. Vercel SPA rewrite와 Node 22 설정을 제공한다. 실제 브라우저 확인 및 외부 배포 결과는 TEST_REPORT.md와 DEPLOYMENT.md를 참고한다. 외부 배포는 사용자가 직접 진행한다.

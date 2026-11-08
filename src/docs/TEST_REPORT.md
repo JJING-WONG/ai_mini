@@ -54,4 +54,4 @@ jsdom에서는 native dialog의 열림/닫힘 상태만 대체했습니다. 실�
 - 사용자가 Vercel 배포 후 배포 URL에서 직접 경로 접속·새로고침을 확인해야 합니다.
 - 동일 데이터의 여러 탭 동시 편집 병합·동기화는 구현하지 않았습니다.
 - 이전 온라인 npm audit에서 기존 ESLint/minimatch 개발 의존성의 moderate 4건을 확인했습니다. 강제 메이저 버전 변경은 적용하지 않았습니다.
-- GitHub Actions 설정은 추가했지만 원격 CI는 이 작업에서 실행하지 않았습니다.
+- GitHub Actions 워크플로는 제거했으며, 원격 CI는 사용하지 않습니다. 로컬에서 `npm run check`로 검증합니다.

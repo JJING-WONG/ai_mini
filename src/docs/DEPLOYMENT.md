@@ -28,7 +28,7 @@ Vercel에서 이 저장소를 가져오고 다음 값을 확인합니다.
 
 `vercel.json`에 Vite 프리셋과 명령·출력 폴더 및 SPA rewrite를 지정했습니다. 실제 파일이 아닌 화면 경로도 `/index.html`로 진입하여 React Router가 처리합니다. [Vercel의 Vite SPA 안내](https://vercel.com/docs/frameworks/frontend/vite#using-vite-to-make-spas)를 기준으로 설정했습니다.
 
-GitHub Actions는 push·pull request 시 Node 22 환경에서 `npm ci`와 `npm run check`를 실행하도록 설정했습니다. 원격 실행 결과는 GitHub에서 별도 확인합니다.
+GitHub Actions 워크플로는 제거했습니다. 배포 전 로컬에서 `npm run check`를 직접 실행합니다. Vercel의 Build Command는 `npm run build`이므로 배포 과정에서 테스트가 자동 실행되지는 않습니다.
 
 ## 배포 후 확인
 
